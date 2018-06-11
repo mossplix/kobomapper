@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_fr" default="compile.module.fr">
+  <dirname property="module.fr.basedir" file="${ant.file.module_fr}"/>
+  
+  <property name="module.jdk.home.fr" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.fr" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.fr" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.fr" value="-encoding UTF-8 -source 8 -target 8 ${compiler.args}"/>
+  
+  <property name="fr.output.dir" value="${module.fr.basedir}/../../../../../../../../../out/production/fr"/>
+  <property name="fr.testoutput.dir" value="${module.fr.basedir}/../../../../../../../../../out/test/fr"/>
+  
+  <path id="fr.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="fr.module.production.classpath">
+    <path refid="${module.jdk.classpath.fr}"/>
+    <path refid="library.junit.classpath"/>
+    <path refid="library.00_core_test_lib.classpath"/>
+    <path refid="library.josm-custom.classpath"/>
+    <path refid="library.lib21.classpath"/>
+    <path refid="library.junit1.classpath"/>
+    <pathelement location="${test.output.dir}"/>
+    <pathelement location="${checkstyle.output.dir}"/>
+  </path>
+  
+  <path id="fr.runtime.production.module.classpath">
+    <pathelement location="${fr.output.dir}"/>
+    <path refid="library.junit.classpath"/>
+    <path refid="library.00_core_test_lib.classpath"/>
+    <path refid="library.josm-custom.classpath"/>
+    <path refid="library.lib21.classpath"/>
+    <path refid="library.junit1.classpath"/>
+    <path refid="test.runtime.production.module.classpath"/>
+    <path refid="checkstyle.runtime.production.module.classpath"/>
+  </path>
+  
+  <path id="fr.module.classpath">
+    <path refid="${module.jdk.classpath.fr}"/>
+    <pathelement location="${fr.output.dir}"/>
+    <path refid="library.junit.classpath"/>
+    <path refid="library.00_core_test_lib.classpath"/>
+    <path refid="library.josm-custom.classpath"/>
+    <path refid="library.lib21.classpath"/>
+    <path refid="library.junit1.classpath"/>
+    <pathelement location="${test.testoutput.dir}"/>
+    <pathelement location="${test.output.dir}"/>
+    <pathelement location="${checkstyle.testoutput.dir}"/>
+    <pathelement location="${checkstyle.output.dir}"/>
+  </path>
+  
+  <path id="fr.runtime.module.classpath">
+    <pathelement location="${fr.testoutput.dir}"/>
+    <pathelement location="${fr.output.dir}"/>
+    <path refid="library.junit.classpath"/>
+    <path refid="library.00_core_test_lib.classpath"/>
+    <path refid="library.josm-custom.classpath"/>
+    <path refid="library.lib21.classpath"/>
+    <path refid="library.junit1.classpath"/>
+    <path refid="test.runtime.module.classpath"/>
+    <path refid="checkstyle.runtime.module.classpath"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.fr">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.fr">
+    <patternset refid="excluded.from.module.fr"/>
+  </patternset>
+  
+  <path id="fr.module.sourcepath">
+    <dirset dir="${module.fr.basedir}">
+      <include name="cadastre"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.fr" depends="compile.module.fr.production,compile.module.fr.tests" description="Compile module fr"/>
+  
+  <target name="compile.module.fr.production" depends="register.custom.compilers,compile.module.test,compile.module.checkstyle" description="Compile module fr; production classes">
+    <mkdir dir="${fr.output.dir}"/>
+    <javac2 destdir="${fr.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.fr}/javac">
+      <compilerarg line="${compiler.args.fr}"/>
+      <bootclasspath refid="fr.module.bootclasspath"/>
+      <classpath refid="fr.module.production.classpath"/>
+      <src refid="fr.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.fr"/>
+    </javac2>
+    
+    <copy todir="${fr.output.dir}">
+      <fileset dir="${module.fr.basedir}/cadastre">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.fr.tests" depends="register.custom.compilers,compile.module.fr.production" description="compile module fr; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.fr" description="cleanup module">
+    <delete dir="${fr.output.dir}"/>
+    <delete dir="${fr.testoutput.dir}"/>
+  </target>
+</project>
